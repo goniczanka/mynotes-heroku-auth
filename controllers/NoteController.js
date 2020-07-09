@@ -12,7 +12,8 @@ const note = {
       });
   },
   getAllNotes: (req, res) => {
-    Note.find({ userID: req.body.userID }) // req.query.id (z url)
+    console.log(req.query);
+    Note.find({ userID: req.query.userID }) // req.query.id (z url)
       .then((notes) => {
         if (!notes.length) {
           return res.status(404).json("User doesn't have any notes.");
