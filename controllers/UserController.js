@@ -1,4 +1,5 @@
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const User = require("../models/UserModel");
 
 const user = {
@@ -26,7 +27,21 @@ const user = {
               username: user.username,
               createdAt: user.createdAt,
             };
-            return res.json(payload);
+            // return res.json(payload);
+
+            jwt.sign(
+              payload,
+              "secret",
+              {
+                expiresIn: 31556926,
+              },
+              (err, token) => {
+                res.json({
+                  success: true,
+                  token: "Bearer " + token,
+                });
+              }
+            );
           } else {
             return res.status(403).json("Wrong password.");
           }
