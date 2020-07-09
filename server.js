@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const morgan = require("morgan");
 const path = require("path");
+const passport = require("passport");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -20,6 +21,9 @@ mongoose.connection.on("connected", () => {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.use(passport.initialize());
+require("./config/passport")(passport);
 
 // HTTP request logger
 app.use(morgan("tiny"));
