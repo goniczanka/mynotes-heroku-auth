@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
+import jwt_decode from "jwt-decode";
+import setAuthToken from "../utils/setAuthToken";
 
 export default class LoginPage extends Component {
   state = {
@@ -25,6 +27,11 @@ export default class LoginPage extends Component {
       .post("/api/user/login", user)
       .then((res) => {
         console.log(res.data);
+        const { token } = res.data;
+        localStorage.setItem("jwtToken", token);
+        setAuthToken(token);
+        const decoded = jwt_decode(token);
+        console.log(decoded);
       })
       .catch((err) => {
         console.log(err);
