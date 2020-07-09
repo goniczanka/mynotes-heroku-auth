@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import axios from "axios";
 import MainPage from "./MainPage";
 import UserPage from "./UserPage";
+import LoginPage from "./LoginPage";
 
 export default class RootPage extends Component {
   state = {
@@ -54,6 +55,9 @@ export default class RootPage extends Component {
               <li>
                 <Link to="/user">user page</Link>
               </li>
+              <li>
+                <Link to="/login">login page</Link>
+              </li>
             </ul>
           </div>
           <Switch>
@@ -79,6 +83,11 @@ export default class RootPage extends Component {
                   nouserNotestes={this.state.userNotes}
                 />
               )}
+            />
+            <Route
+              exact
+              path="/login"
+              render={(props) => <LoginPage {...props} />}
             />
           </Switch>
         </Router>

@@ -7,5 +7,6 @@ router.get("/notes/all", note.getAllUsersNotes);
 router.get("/note", note.getSingleNote);
 
 router.get("/users", user.getAllUsers);
+router.post("/user/login", user.userLogin);
 
 module.exports = router;
