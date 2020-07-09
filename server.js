@@ -27,10 +27,17 @@ require("./config/passport")(passport);
 
 // HTTP request logger
 app.use(morgan("tiny"));
-app.use("/api", routes);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
+}
+
+app.use("/api", routes);
+
+if (process.env.NODE_ENV === "production") {
+  app.use("*", function (request, response) {
+    response.sendFile(path.join(__dirname, "client", "build", "index.html"));
+  });
 }
 
 app.listen(PORT, console.log(`Server is starting at ${PORT}`));
