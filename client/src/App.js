@@ -1,91 +1,33 @@
 import React, { Component } from "react";
+import Note from "./components/Note";
 import axios from "axios";
 
 export default class App extends Component {
   state = {
-    title: "",
-    body: "",
-    posts: [],
+    notes: [],
   };
 
-  componentDidMount() {
-    this.getBlogPosts();
-  }
-
-  handleChange = ({ target }) => {
-    const { name, value } = target;
-    this.setState({
-      [name]: value,
-    });
-  };
-
-  handleSubmit = (e) => {
-    e.preventDefault();
-
-    const payload = {
-      title: this.state.title,
-      body: this.state.body,
-    };
-
-    axios({
-      url: "/api/save",
-      method: "POST",
-      data: payload,
-    })
-      .then(() => {
-        this.setState({
-          title: "",
-          body: "",
-        });
-        this.getBlogPosts(this.state.posts);
-      })
-      .catch(() => {
-        console.log("Internal server error");
-      });
-  };
-
-  getBlogPosts = () => {
+  getAllNotes = () => {
     axios
-      .get("/api")
+      .get("/api/notes/all")
       .then((res) => {
+        console.log(res.data);
         this.setState({
-          posts: res.data,
+          notes: res.data,
         });
       })
-      .catch((err) => {
-        console.log("Error: " + err);
-      });
-  };
-
-  displayBlogPosts = (posts) => {
-    if (!posts.length) return null;
-
-    return posts.map((post, index) => (
-      <div key={index}>
-        <h3>{post.title}</h3>
-        <p>{post.body}</p>
-      </div>
-    ));
+      .catch((err) => console.log(err));
   };
 
   render() {
     return (
       <div>
-        <form onSubmit={this.handleSubmit}>
-          <input
-            type="text"
-            name="title"
-            onChange={this.handleChange}
-            placeholder="title"
-          />
-          <textarea
-            name="body"
-            onChange={this.handleChange}
-            placeholder="body"
-          ></textarea>
-          <button type="submit">send</button>
-        </form>
-        <div>{this.displayBlogPosts(this.state.posts)}</div>
+        <div>
+          <button onClick={this.getAllNotes}>get all notes</button>
+        </div>
+        {this.state.notes.map((item) => (
+          <Note {...item} key={item._id} />
+        ))}
       </div>
     );
   }
