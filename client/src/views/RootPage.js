@@ -1,17 +1,18 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import axios from "axios";
 import MainPage from "./MainPage";
 import UserPage from "./UserPage";
 import LoginPage from "./LoginPage";
+import Nav from "../components/Nav";
 import setAuthToken from "../utils/setAuthToken";
 
 export default class RootPage extends Component {
   state = {
     notes: [],
-    userNotes: [],
     user: {},
+    userAuthenticated: false,
   };
 
   componentDidMount() {
@@ -26,6 +27,7 @@ export default class RootPage extends Component {
       console.log(decoded);
       // Set user and isAuthenticated
       this.setCurrentUser(decoded);
+      this.setUserAuthenticated(true);
       // Check for expired token
       const currentTime = Date.now() / 1000; // to get in milliseconds
 
@@ -38,7 +40,7 @@ export default class RootPage extends Component {
         // Set current user to empty object {} which will set isAuthenticated to false
         this.setCurrentUser({});
         // Redirect to login
-        // window.location.href = "./login";
+        window.location.href = "./login";
       } else {
         // Get user notes
       }
@@ -46,6 +48,13 @@ export default class RootPage extends Component {
       // User is not authenticated. Redirect user to login page.
     }
   }
+
+  logoutUser = () => {
+    localStorage.removeItem("jwtToken");
+    setAuthToken(false);
+    this.setCurrentUser({});
+    this.setUserAuthenticated(false);
+  };
 
   setCurrentUser = (user) => {
     this.setState({ user });
@@ -79,32 +88,37 @@ export default class RootPage extends Component {
       });
   };
 
+  setUserAuthenticated = (isAuth) => {
+    const msg = isAuth ? "logged in" : "logged out";
+    console.log(msg);
+    this.setState({
+      userAuthenticated: isAuth,
+    });
+  };
+
   logValue = () => {
     console.log("log value");
   };
 
   render() {
-    const { user } = this.state;
+    const { user, notes, userAuthenticated } = this.state;
+    const {
+      getAllUsersNotes,
+      logValue,
+      getOneUserNotes,
+      setUserAuthenticated,
+    } = this;
 
     return (
       <div>
         <Router>
           <div>
-            <ul>
-              <h3>
-                {user.username ? <b>Hello {user.username}!</b> : "No user"}
-              </h3>
-              <li>
-                <Link to="/">main page</Link>
-              </li>
-              <li>
-                <Link to="/user">user page</Link>
-              </li>
-              <li>
-                <Link to="/login">login page</Link>
-              </li>
-            </ul>
+            <h3>{user.username ? <b>Hello {user.username}!</b> : "No user"}</h3>
           </div>
+          <Nav
+            logoutUser={this.logoutUser}
+            userAuthenticated={userAuthenticated}
+          />
           <Switch>
             <Route
               exact
@@ -112,9 +126,10 @@ export default class RootPage extends Component {
               render={(props) => (
                 <MainPage
                   {...props}
-                  getAllNotes={this.getAllUsersNotes}
+                  getAllUsersNotes={this.getAllUsersNotes}
                   logValue={this.logValue}
                   notes={this.state.notes}
+                  userAuthenticated={userAuthenticated}
                 />
               )}
             />
@@ -124,15 +139,21 @@ export default class RootPage extends Component {
               render={(props) => (
                 <UserPage
                   {...props}
-                  getOneUserNotes={this.getOneUserNotes}
-                  nouserNotestes={this.state.userNotes}
+                  getOneUserNotes={getOneUserNotes}
+                  userAuthenticated={userAuthenticated}
                 />
               )}
             />
             <Route
               exact
               path="/login"
-              render={(props) => <LoginPage {...props} />}
+              render={(props) => (
+                <LoginPage
+                  {...props}
+                  userAuthenticated={userAuthenticated}
+                  setUserAuthenticated={setUserAuthenticated}
+                />
+              )}
             />
           </Switch>
         </Router>

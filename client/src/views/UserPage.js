@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import User from "../components/User";
+import { Redirect } from "react-router-dom";
 
 export default class UserPage extends Component {
   state = {
@@ -39,9 +40,11 @@ export default class UserPage extends Component {
 
   render() {
     const { userID } = this.state;
+    const { userAuthenticated } = this.props;
 
     return (
       <div>
+        {!userAuthenticated && <Redirect to="/login" />}
         <form onSubmit={this.handleSubmit}>
           <input
             type="text"
@@ -53,7 +56,7 @@ export default class UserPage extends Component {
         </form>
         <div>
           {this.state.users.map((user) => (
-            <User {...user} key={user._id} />
+            <User {...user} key={user.id} />
           ))}
         </div>
       </div>

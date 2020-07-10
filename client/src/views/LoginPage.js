@@ -2,11 +2,13 @@ import React, { Component } from "react";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
 import setAuthToken from "../utils/setAuthToken";
+import { Redirect } from "react-router-dom";
 
 export default class LoginPage extends Component {
   state = {
     username: "",
     password: "",
+    userAuthenticated: false,
   };
 
   handleChange = (e) => {
@@ -32,6 +34,7 @@ export default class LoginPage extends Component {
         setAuthToken(token);
         const decoded = jwt_decode(token);
         console.log(decoded);
+        this.props.setUserAuthenticated(true);
       })
       .catch((err) => {
         console.log(err);
@@ -40,8 +43,11 @@ export default class LoginPage extends Component {
   };
 
   render() {
+    const { userAuthenticated } = this.props;
     return (
-      <div>
+      <>
+        {userAuthenticated && <Redirect to="/" />}
+        <p>{userAuthenticated ? "logged in" : "logged out"}</p>
         <form onSubmit={this.handleSubmit}>
           <input
             type="text"
@@ -59,7 +65,7 @@ export default class LoginPage extends Component {
           />
           <button type="submit">submit</button>
         </form>
-      </div>
+      </>
     );
   }
 }
