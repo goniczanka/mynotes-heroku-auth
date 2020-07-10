@@ -9,6 +9,7 @@ export default class LoginPage extends Component {
     username: "",
     password: "",
     userAuthenticated: false,
+    errors: { username: "", password: "" },
   };
 
   handleChange = (e) => {
@@ -28,6 +29,7 @@ export default class LoginPage extends Component {
     axios
       .post("/api/user/login", user)
       .then((res) => {
+        console.log("then");
         console.log(res.data);
         const { token } = res.data;
         localStorage.setItem("jwtToken", token);
@@ -37,8 +39,12 @@ export default class LoginPage extends Component {
         this.props.setUserAuthenticated(true);
       })
       .catch((err) => {
+        console.log("catch");
         console.log(err);
         console.log(err.response.data);
+        this.setState({
+          errors: err.response.data,
+        });
       });
   };
 
@@ -56,6 +62,7 @@ export default class LoginPage extends Component {
             name="username"
             value={this.state.username}
           />
+          <p className="error-field">{this.state.errors.username}</p>
           <input
             type="password"
             onChange={this.handleChange}
@@ -63,6 +70,7 @@ export default class LoginPage extends Component {
             name="password"
             value={this.state.password}
           />
+          <p className="error-field">{this.state.errors.password}</p>
           <button type="submit">submit</button>
         </form>
       </>

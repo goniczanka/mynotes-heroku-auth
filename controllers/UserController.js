@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/UserModel");
+const validateLoginInput = require("../validation/login");
 
 const user = {
   getAllUsers: (req, res) => {
@@ -12,6 +13,12 @@ const user = {
       });
   },
   userLogin: (req, res) => {
+    // Form validation
+    const { errors, isValid } = validateLoginInput(req.body);
+    // Check validation
+    if (!isValid) {
+      return res.status(400).json(errors);
+    }
     const username = req.body.username;
     const password = req.body.password;
     User.findOne({ username }).then((user) => {

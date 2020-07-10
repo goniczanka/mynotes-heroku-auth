@@ -101,13 +101,8 @@ export default class RootPage extends Component {
   };
 
   render() {
-    const { user, notes, userAuthenticated } = this.state;
-    const {
-      getAllUsersNotes,
-      logValue,
-      getOneUserNotes,
-      setUserAuthenticated,
-    } = this;
+    const { user, userAuthenticated } = this.state;
+    const { getOneUserNotes, setUserAuthenticated } = this;
 
     return (
       <div>
